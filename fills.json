@@ -1,0 +1,810 @@
+{
+ "_readme": "Source of truth. Add new fills from Monarch here (date, station, amount, car). car: Mini | Volvo | Porsche | Civic | Assumed Porsche | Weekend: Mini or Porsche | Excluded | EV charging. Then run scripts/update.py (or the refresh workflow) to rebuild data.json.",
+ "fills": [
+  {
+   "date": "2024-07-04",
+   "station": "Chevron",
+   "amount": 54.39,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-07-15",
+   "station": "Shell",
+   "amount": 73.24,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-07-17",
+   "station": "Shell",
+   "amount": 54.91,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-07-26",
+   "station": "Elite Gas & Mart",
+   "amount": 55.69,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-08-01",
+   "station": "Elite Gas & Mart",
+   "amount": 37.42,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-08-07",
+   "station": "Elite Gas & Mart",
+   "amount": 43.49,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-08-19",
+   "station": "Elite Gas & Mart",
+   "amount": 53.84,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-08-19",
+   "station": "Elite Gas & Mart",
+   "amount": 45.88,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-08-26",
+   "station": "Shell",
+   "amount": 52.5,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-09-02",
+   "station": "Arco",
+   "amount": 46.36,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-09-14",
+   "station": "Elite Gas & Mart",
+   "amount": 49.09,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-09-16",
+   "station": "Chevron",
+   "amount": 74.46,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-09-17",
+   "station": "One",
+   "amount": 28.5,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-10-02",
+   "station": "Elite Gas & Mart",
+   "amount": 62.94,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-10-03",
+   "station": "Chevron",
+   "amount": 50.32,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-10-15",
+   "station": "Elite Gas & Mart",
+   "amount": 48.55,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-10-16",
+   "station": "Elite Gas & Mart",
+   "amount": 58.56,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-10-28",
+   "station": "Elite Gas & Mart",
+   "amount": 47.57,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-11-01",
+   "station": "Chevron",
+   "amount": 70.41,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-11-21",
+   "station": "Arco",
+   "amount": 44.6,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-11-25",
+   "station": "Elite Gas & Mart",
+   "amount": 53.8,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2024-12-20",
+   "station": "76 Fuel",
+   "amount": 53.2,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-01-02",
+   "station": "Elite Gas & Mart",
+   "amount": 60.44,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-01-14",
+   "station": "Elite Gas & Mart",
+   "amount": 38.99,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-01-24",
+   "station": "Chevron",
+   "amount": 53.09,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-01-31",
+   "station": "Elite Gas & Mart",
+   "amount": 56.68,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-02-10",
+   "station": "Shell",
+   "amount": 55.35,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-02-20",
+   "station": "Elite Gas & Mart",
+   "amount": 45.5,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-02-24",
+   "station": "Elite Gas & Mart",
+   "amount": 56.78,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-02-28",
+   "station": "76 Fuel",
+   "amount": 46.6,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-03-07",
+   "station": "Elite Gas & Mart",
+   "amount": 48.27,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-04-09",
+   "station": "Arco",
+   "amount": 55.43,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-04-11",
+   "station": "Elite Gas & Mart",
+   "amount": 68.19,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-04-14",
+   "station": "Bakery (miscategorized)",
+   "amount": 3.49,
+   "car": "Excluded",
+   "note": "Miscategorized in Monarch"
+  },
+  {
+   "date": "2025-04-21",
+   "station": "76 Fuel",
+   "amount": 53.44,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-04-28",
+   "station": "Elite Gas & Mart",
+   "amount": 49.33,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-05-07",
+   "station": "Chevron",
+   "amount": 76.4,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-05-12",
+   "station": "Chevron",
+   "amount": 62.58,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-05-28",
+   "station": "Elite Gas & Mart",
+   "amount": 50.66,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-06-06",
+   "station": "Chevron",
+   "amount": 71.25,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-06-18",
+   "station": "Elite Gas & Mart",
+   "amount": 48.93,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-06-30",
+   "station": "76 Fuel",
+   "amount": 48.26,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-07-09",
+   "station": "Chevron",
+   "amount": 71.19,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-07-15",
+   "station": "76 Fuel",
+   "amount": 53.66,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-07-19",
+   "station": "Valero",
+   "amount": 6.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-07-24",
+   "station": "View Alliance Gas",
+   "amount": 46.64,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-07-31",
+   "station": "Elite Gas & Mart",
+   "amount": 40.87,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-08-08",
+   "station": "76 Fuel",
+   "amount": 45.79,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-08-08",
+   "station": "76 Fuel",
+   "amount": 2.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-08-16",
+   "station": "Chevron",
+   "amount": 65.47,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-08-18",
+   "station": "Chevron",
+   "amount": 41.25,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-08-18",
+   "station": "Chevron",
+   "amount": 8.0,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-08-24",
+   "station": "76 Fuel",
+   "amount": 49.1,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-08-30",
+   "station": "Elite Gas & Mart",
+   "amount": 60.0,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-09-01",
+   "station": "Elite Gas & Mart",
+   "amount": 30.0,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-09-07",
+   "station": "Shell",
+   "amount": 51.67,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-09-07",
+   "station": "Shell",
+   "amount": 9.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-09-13",
+   "station": "Elite Gas & Mart",
+   "amount": 47.77,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-09-15",
+   "station": "Chevron",
+   "amount": 52.05,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-09-27",
+   "station": "Shell",
+   "amount": 37.99,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-10-03",
+   "station": "76 Fuel",
+   "amount": 52.92,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-10-06",
+   "station": "Shell",
+   "amount": 9.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-10-09",
+   "station": "Chevron",
+   "amount": 68.5,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-10-12",
+   "station": "Elite Gas & Mart",
+   "amount": 45.02,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-10-23",
+   "station": "Shell",
+   "amount": 57.54,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-11-04",
+   "station": "Elite Gas & Mart",
+   "amount": 48.73,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-11-08",
+   "station": "Shell",
+   "amount": 72.24,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-11-08",
+   "station": "Shell",
+   "amount": 1.59,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2025-11-16",
+   "station": "Elite Gas & Mart",
+   "amount": 46.09,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-11-24",
+   "station": "Shell",
+   "amount": 58.17,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-12-03",
+   "station": "Shell",
+   "amount": 43.71,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2025-12-27",
+   "station": "Quik Stop",
+   "amount": 49.49,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-01-02",
+   "station": "Shell",
+   "amount": 45.65,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-01-12",
+   "station": "Shell",
+   "amount": 50.88,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-01-14",
+   "station": "Arco",
+   "amount": 40.91,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-01-18",
+   "station": "Shell",
+   "amount": 11.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-01-23",
+   "station": "Chevron",
+   "amount": 49.36,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-01-29",
+   "station": "Valero",
+   "amount": 46.07,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-02-02",
+   "station": "Chevron",
+   "amount": 75.35,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-02-10",
+   "station": "Shell",
+   "amount": 51.9,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-02-21",
+   "station": "Shell",
+   "amount": 70.37,
+   "car": "Assumed Porsche",
+   "note": "Porsche purchase weekend (bought Sat Feb 21)"
+  },
+  {
+   "date": "2026-02-21",
+   "station": "Conserv Fuel",
+   "amount": 7.03,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-02-22",
+   "station": "Quik Stop",
+   "amount": 41.3,
+   "car": "Assumed Porsche",
+   "note": "Porsche purchase weekend (bought Sat Feb 21)"
+  },
+  {
+   "date": "2026-02-22",
+   "station": "Chevron",
+   "amount": 30.0,
+   "car": "Assumed Porsche",
+   "note": "Porsche purchase weekend (bought Sat Feb 21)"
+  },
+  {
+   "date": "2026-02-23",
+   "station": "Chevron",
+   "amount": 77.53,
+   "car": "Assumed Porsche",
+   "note": "Porsche purchase weekend (bought Sat Feb 21)"
+  },
+  {
+   "date": "2026-02-27",
+   "station": "Chevron",
+   "amount": 72.76,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-03-11",
+   "station": "Shell",
+   "amount": 70.33,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-03-15",
+   "station": "Chevron",
+   "amount": 52.57,
+   "car": "Weekend: Mini or Porsche",
+   "note": ""
+  },
+  {
+   "date": "2026-03-28",
+   "station": "Chevron",
+   "amount": 82.01,
+   "car": "Weekend: Mini or Porsche",
+   "note": ""
+  },
+  {
+   "date": "2026-03-30",
+   "station": "Chevron",
+   "amount": 64.86,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-04-06",
+   "station": "Shell",
+   "amount": 60.06,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-04-19",
+   "station": "Chevron",
+   "amount": 73.03,
+   "car": "Weekend: Mini or Porsche",
+   "note": ""
+  },
+  {
+   "date": "2026-04-24",
+   "station": "Shell",
+   "amount": 78.57,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-04-26",
+   "station": "ExxonMobil",
+   "amount": 17.85,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-05-07",
+   "station": "Shell",
+   "amount": 73.87,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-05-09",
+   "station": "Chevron",
+   "amount": 47.27,
+   "car": "Weekend: Mini or Porsche",
+   "note": ""
+  },
+  {
+   "date": "2026-05-24",
+   "station": "Shell",
+   "amount": 71.89,
+   "car": "Weekend: Mini or Porsche",
+   "note": ""
+  },
+  {
+   "date": "2026-06-24",
+   "station": "Shell",
+   "amount": 78.78,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-07-02",
+   "station": "Shell",
+   "amount": 60.01,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-07-20",
+   "station": "Chevron",
+   "amount": 62.69,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-07-27",
+   "station": "Great Gas",
+   "amount": 54.08,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-07-27",
+   "station": "ExxonMobil",
+   "amount": 34.32,
+   "car": "Mini",
+   "note": ""
+  },
+  {
+   "date": "2026-08-23",
+   "station": "Shell",
+   "amount": 76.12,
+   "car": "Weekend: Mini or Porsche",
+   "note": "Day before the Volvo arrived (Aug 24)"
+  },
+  {
+   "date": "2026-08-25",
+   "station": "Shell",
+   "amount": 9.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-08-26",
+   "station": "Chevron",
+   "amount": 17.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-09-06",
+   "station": "ChargePoint",
+   "amount": 8.97,
+   "car": "EV charging",
+   "note": "Public charging, not gas"
+  },
+  {
+   "date": "2026-09-09",
+   "station": "Chevron",
+   "amount": 82.58,
+   "car": "Volvo",
+   "note": "Confirmed"
+  },
+  {
+   "date": "2026-09-12",
+   "station": "Shell",
+   "amount": 17.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-09-13",
+   "station": "Chevron",
+   "amount": 42.19,
+   "car": "Porsche",
+   "note": "Confirmed"
+  },
+  {
+   "date": "2026-09-16",
+   "station": "Chevron",
+   "amount": 71.18,
+   "car": "Civic",
+   "note": "Confirmed"
+  },
+  {
+   "date": "2026-09-20",
+   "station": "Chevron",
+   "amount": 95.31,
+   "car": "Porsche",
+   "note": "Confirmed"
+  },
+  {
+   "date": "2026-09-20",
+   "station": "Chevron",
+   "amount": 1.25,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-09-27",
+   "station": "ChargePoint",
+   "amount": 2.05,
+   "car": "EV charging",
+   "note": "Public charging, not gas"
+  },
+  {
+   "date": "2026-10-06",
+   "station": "Shell",
+   "amount": 11.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-10-08",
+   "station": "Chevron",
+   "amount": 103.63,
+   "car": "Volvo",
+   "note": "Confirmed"
+  }
+ ]
+}

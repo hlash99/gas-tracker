@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gas Tracker — Mini vs Volvo V60</title>
+<style>
+  :root{
+    --bg:#ffffff;--surface:#f7f8fa;--line:#e6e8ec;--ink:#1a1d21;--muted:#6b7280;--accent:#185FA5;
+    --grid:#e1e0d9;--shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#14161a;--surface:#1c1f25;--line:#2a2e36;--ink:#e9ecf1;--muted:#9aa3af;--grid:#2c2c2a;--shadow:none;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 18px 60px}
+  header.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);
+    padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  header.top h1{font-size:16px;margin:0;font-weight:600}
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb a{color:inherit}
+  .upd{font-size:12px;color:var(--muted)}
+  h2{font-size:20px;margin:34px 0 6px;font-weight:600}
+  p.sub{color:var(--muted);margin:4px 0 0;font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+  .kpi .l{font-size:12.5px;color:var(--muted)}
+  .kpi .v{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  .kpi .v.good{color:#137a4f}
+  .kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .chartbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;box-shadow:var(--shadow);min-width:0}
+  .chartwrap{position:relative;width:100%;min-width:0;height:300px}
+  .chartwrap.short{height:220px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:2px 0 10px;font-size:12px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:11px;height:11px;border-radius:3px;flex:none}
+  .tnote{font-size:11.5px;color:var(--muted);margin:8px 2px 0;line-height:1.55}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+  .chips button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:20px;padding:4px 11px;font-size:12px;cursor:pointer}
+  .chips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tablescroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:8px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+  th:nth-child(-n+3),td:nth-child(-n+3),th:nth-child(n+7),td:nth-child(n+7){text-align:left}
+  td.num{font-variant-numeric:tabular-nums}
+  thead th{background:var(--surface);font-weight:600;position:sticky;top:0}
+  tbody tr:hover td{background:rgba(0,0,0,.025)}
+  tr.dim td{opacity:.5}
+  .tag{display:inline-flex;align-items:center;gap:6px}
+  .tag i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  td.note{white-space:normal;color:var(--muted);font-size:12px;min-width:180px}
+  ul.notes{font-size:13.5px;color:var(--ink);padding-left:20px;margin:8px 0 0}
+  ul.notes li{margin:4px 0}
+  footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  @media(max-width:560px){.wrap{padding:0 14px 56px}h2{font-size:18px}.chartwrap{height:250px}.kpi .v{font-size:24px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="crumb"><a href="https://hlash99.github.io/">&larr; hlash99 dashboard</a></div>
+  <h1>⛽ Gas Tracker — Mini → Volvo V60</h1>
+  <span class="upd" id="updated">loading…</span>
+</header>
+<div class="wrap">
+  <h2>Is the Volvo using less gas?</h2>
+  <p class="sub">Every gas charge from Monarch since July 2024, converted to estimated gallons with EIA's weekly San Francisco premium price. That takes out the 2026 price spike and the difference in tank size, so the cars compare on gallons per 30 days.</p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <h2>Gallons per 30 days</h2>
+  <p class="sub">The Mini's two baselines are from before the Porsche (Feb 21 2026), when every fill was the Mini. The Volvo is measured fill to fill.</p>
+  <div class="chartbox"><div class="chartwrap short"><canvas id="cmp" role="img" aria-label="Bar chart of gallons per 30 days for the Mini and the Volvo"></canvas></div>
+    <div class="tnote" id="cmpNote"></div></div>
+
+  <h2>Estimated gallons bought per month, by car</h2>
+  <p class="sub">Weekend fills between the Porsche and the Volvo can't be split between the Mini and the Porsche, so they're shown separately.</p>
+  <div class="chartbox"><div class="legend" id="monLegend"></div><div class="chartwrap"><canvas id="mon" role="img" aria-label="Stacked monthly bars of estimated gallons by car"></canvas></div>
+    <div class="tnote">Car washes, snacks and ChargePoint sessions are left out. The current month is partial.</div></div>
+
+  <h2>What gas cost: EIA San Francisco premium, weekly</h2>
+  <p class="sub">This is why dollars alone mislead: premium went from about $4.50 in January to over $6.70 by October.</p>
+  <div class="chartbox"><div class="chartwrap short"><canvas id="price" role="img" aria-label="Line chart of weekly San Francisco premium gas price"></canvas></div></div>
+
+  <h2>Fill log</h2>
+  <p class="sub">Newest first. Estimated gallons = amount ÷ that week's EIA premium price.</p>
+  <div class="chips" id="chips"></div>
+  <div class="tablescroll"><table id="log"><thead><tr><th>Date</th><th>Day</th><th>Station</th><th>Amount</th><th>EIA $/gal</th><th>Est. gal</th><th>Car</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+
+  <h2>Method &amp; caveats</h2>
+  <ul class="notes">
+    <li><b>Fuel</b> means gas-category charges of $20 or more. Smaller ones are car washes, snacks or top-offs, and ChargePoint is EV charging (about $7 per 30 days so far).</li>
+    <li><b>Porsche:</b> it's filled only on weekends, so weekend fills from Feb 21 to Aug 23 2026 are left out of the Mini numbers. The Mini baselines use the 12 months before the Porsche and the same season a year earlier.</li>
+    <li><b>Confirmed by Hassan on Oct 8 2026:</b> Sep 13 (Half Moon Bay) and Sep 20 were the Porsche, Sep 16 was the Civic, and Sep 9 and Oct 8 were the Volvo.</li>
+    <li><b>Prices:</b> EIA is an area average. The Menlo Park Chevron runs above it, so the Volvo's gallons are probably slightly overstated, which makes these numbers conservative.</li>
+    <li><b>Not included:</b> home charging. A full charge costs about $5 at PG&amp;E EV2-A off-peak, so charging most nights would cancel much of the gas saving. Office charging is free.</li>
+    <li><b>Updating:</b> new fills are added from Monarch by hand. EIA prices refresh every week on their own.</li>
+  </ul>
+  <footer>Data: Monarch · EIA weekly retail gasoline prices, San Francisco · Built Oct 2026.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const MUTED=css('--muted'), GRID=css('--grid'), INK=css('--ink');
+const CAR={
+  "Volvo":{c:"#2a78d6",label:"Volvo V60"},
+  "Mini":{c:dark?"#888780":"#b4b2a9",label:"Mini"},
+  "Porsche":{c:"#1baf7a",label:"Porsche"},
+  "Civic":{c:"#eda100",label:"Civic"},
+  "Weekend: Mini or Porsche":{c:dark?"#444441":"#e1e0d9",label:"Weekend: Mini or Porsche"},
+};
+const carKey=c=>c==="Assumed Porsche"?"Porsche":c;
+const fmt$=v=>"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0=v=>"$"+Math.round(v).toLocaleString();
+const md=s=>new Date(s+"T12:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+Chart.defaults.color=MUTED; Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
+
+fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
+  const S=D.summary;
+  $("#updated").textContent="Updated "+new Date(D.updated).toLocaleDateString(undefined,{month:"short",day:"numeric"})+" · EIA week of "+md(S.today_premium_week);
+
+  // KPIs
+  const pct=v=>(v>0?"+":"")+Math.round(v*100)+"%";
+  $("#kpis").innerHTML=[
+    {l:"Volvo vs Mini, gallons per 30 days",v:pct(S.change_vs_mini12),good:S.change_vs_mini12<0,s:`${S.volvo_gal30.toFixed(1)} vs ${S.mini12_gal30.toFixed(1)} gal · ${pct(S.change_vs_season)} vs same season`},
+    {l:"Gas saved per 30 days, at today's price",v:fmt0(S.saving30_today),good:S.saving30_today>0,s:"before home charging"},
+    {l:"Volvo gas cost per 30 days",v:fmt0(S.volvo_gal30*S.today_premium),s:`Mini would be ${fmt0(S.mini12_gal30*S.today_premium)}`},
+    {l:"SF premium, EIA weekly",v:"$"+S.today_premium.toFixed(2),s:"week of "+md(S.today_premium_week)},
+  ].map(k=>`<div class="kpi"><div class="l">${k.l}</div><div class="v${k.good?" good":""}">${k.v}</div><div class="s">${k.s}</div></div>`).join("");
+
+  // comparison bars
+  const cv=[S.mini12_gal30,S.mini_season_gal30,S.volvo_gal30];
+  const lbls=["Mini · 12 mo before Porsche","Mini · Sep–Nov 2025","Volvo · "+md(S.volvo_window[0]).replace(/, \d{4}/,"")+" → "+md(S.volvo_window[1]).replace(/, \d{4}/,"")];
+  const vl={id:"vl",afterDatasetsDraw(c){const x=c.ctx;x.save();x.fillStyle=INK;x.font="12px "+Chart.defaults.font.family;x.textBaseline="middle";
+    c.getDatasetMeta(0).data.forEach((b,i)=>x.fillText(cv[i].toFixed(1)+" gal · "+fmt0(cv[i]*S.today_premium)+"/30d",b.x+6,b.y));x.restore();}};
+  new Chart($("#cmp"),{type:"bar",data:{labels:lbls,datasets:[{data:cv,backgroundColor:[CAR.Mini.c,CAR.Mini.c,CAR.Volvo.c],borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw.toFixed(1)+" gal per 30 days"}}},
+      scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[vl]});
+  $("#cmpNote").textContent=`The Volvo has ${S.volvo_fills} fills so far; its rate counts the gallons bought after the first fill, divided by the days between them. Costs use today's premium ($${S.today_premium.toFixed(2)}).`;
+
+  // monthly gallons by car
+  const fuel=D.fills.filter(f=>f.gal);
+  const months=[...new Set(fuel.map(f=>f.date.slice(0,7)))].sort();
+  const order=["Mini","Weekend: Mini or Porsche","Porsche","Civic","Volvo"];
+  const ds=order.map(k=>({label:CAR[k].label,data:months.map(m=>+fuel.filter(f=>f.date.startsWith(m)&&carKey(f.car)===k).reduce((a,f)=>a+f.gal,0).toFixed(1)),
+    backgroundColor:CAR[k].c,stack:"s",borderColor:css('--bg'),borderWidth:{top:1},maxBarThickness:22})).filter(d=>d.data.some(v=>v>0));
+  $("#monLegend").innerHTML=ds.map(d=>`<span><i class="sw" style="background:${d.backgroundColor}"></i>${d.label}</span>`).join("");
+  const mlab=months.map(m=>new Date(m+"-15T12:00").toLocaleDateString(undefined,{month:"short",year:"2-digit"}));
+  const idx=d=>months.indexOf(d.slice(0,7))+(+d.slice(8,10)-1)/31-0.5;
+  const marks=[[D.porsche_bought,"Porsche"],[D.volvo_arrived,"Volvo"]];
+  const era={id:"era",afterDatasetsDraw(c){const{ctx:x,chartArea:a,scales:{x:sx}}=c;x.save();marks.forEach(([d,l])=>{const i=idx(d);if(i<-0.5)return;
+    const lo=sx.getPixelForValue(Math.floor(i+0.5)),w=(sx.getPixelForValue(1)-sx.getPixelForValue(0)),px=lo-w/2+w*((i+0.5)%1);
+    x.strokeStyle=MUTED;x.setLineDash([4,4]);x.beginPath();x.moveTo(px,a.top);x.lineTo(px,a.bottom);x.stroke();x.setLineDash([]);
+    x.fillStyle=INK;x.font="11px "+Chart.defaults.font.family;x.textAlign="right";x.fillText(l,px-4,a.top+10);});x.restore();}};
+  new Chart($("#mon"),{type:"bar",data:{labels:mlab,datasets:ds},plugins:[era],
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+      plugins:{legend:{display:false},tooltip:{filter:i=>i.raw>0,callbacks:{label:i=>i.dataset.label+": "+i.raw.toFixed(1)+" gal"}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{autoSkip:false,maxRotation:60,font:{size:11}}},y:{stacked:true,grid:{color:GRID},border:{display:false},title:{display:true,text:"estimated gallons"}}}}});
+
+  // price line
+  const pk=Object.keys(D.eia.premium).filter(k=>k>=months[0]+"-01");
+  new Chart($("#price"),{type:"line",data:{labels:pk,datasets:[{data:pk.map(k=>D.eia.premium[k]),borderColor:CAR.Volvo.c,backgroundColor:"rgba(42,120,214,.10)",fill:true,borderWidth:2,pointRadius:0,tension:.2}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>"Week of "+md(i[0].label),label:i=>"$"+i.raw.toFixed(3)+"/gal"}}},
+      scales:{x:{grid:{display:false},ticks:{maxTicksLimit:9,callback:function(v){return new Date(this.getLabelForValue(v)+"T12:00").toLocaleDateString(undefined,{month:"short",year:"2-digit"})}}},
+        y:{grid:{color:GRID},border:{display:false},ticks:{callback:v=>"$"+v.toFixed(2)}}}}});
+
+  // table + filter chips
+  const rows=D.fills.slice().reverse();
+  const cars=["All","Volvo","Mini","Porsche","Civic","Weekend: Mini or Porsche","Excluded / EV"];
+  let sel="All";
+  const match=f=>sel==="All"||(sel==="Excluded / EV"?(f.car==="Excluded"||f.car==="EV charging"):carKey(f.car)===sel);
+  const draw=()=>{
+    $("#chips").innerHTML=cars.map(c=>`<button class="${c===sel?"on":""}" data-c="${c}">${c}</button>`).join("");
+    $("#log tbody").innerHTML=rows.filter(match).map(f=>{const k=carKey(f.car),col=(CAR[k]||{}).c||"transparent";
+      return `<tr class="${f.gal?"":"dim"}"><td class="num">${f.date}</td><td>${f.day}</td><td>${f.station}</td><td class="num">${fmt$(f.amount)}</td><td class="num">$${f.price.toFixed(3)}</td><td class="num">${f.gal?f.gal.toFixed(2):"—"}</td><td><span class="tag"><i style="background:${col}"></i>${f.car}</span></td><td class="note">${f.note||""}</td></tr>`;}).join("");
+  };
+  $("#chips").addEventListener("click",e=>{const b=e.target.closest("button");if(b){sel=b.dataset.c;draw();}});
+  draw();
+}).catch(e=>{$("#updated").textContent="data failed to load";console.error(e);});
+</script>
+</body>
+</html>
