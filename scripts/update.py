@@ -6,6 +6,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SERIES = {"premium": "EMM_EPMP_PTE_Y05SF_DPG", "regular": "EMM_EPMR_PTE_Y05SF_DPG"}
 FUEL_CARS = {"Mini", "Volvo", "Porsche", "Civic", "Assumed Porsche", "Weekend: Mini or Porsche"}
 START = "2024-01-01"
+VOLVO_ARRIVED = "2026-08-24"
 
 
 def fetch_series(sid):
@@ -58,6 +59,23 @@ def main():
         span = (dt.date.fromisoformat(vf[-1]["date"]) - dt.date.fromisoformat(vf[0]["date"])).days
         volvo = sum(f["gal"] for f in vf[1:]) / span * 30
     today = eia["premium"][keys[-1]]
+
+    # Porsche (bought Feb 21 2026, filled only on weekends). Since the Volvo arrived there is
+    # no Mini, so Porsche fills are tagged directly: gallons bought / days elapsed. Before
+    # that, weekend fills can't be split between Mini and Porsche, so only an upper bound.
+    as_of = max(dt.date.today().isoformat(), fills[-1]["date"])
+    p_since = sum(f["gal"] for f in fills if f["car"] == "Porsche" and f["date"] >= VOLVO_ARRIVED)
+    p_days = (dt.date.fromisoformat(as_of) - dt.date.fromisoformat(VOLVO_ARRIVED)).days + 1
+    pre = [f for f in fills if "2026-02-24" <= f["date"] < VOLVO_ARRIVED]
+    pre_days = (dt.date.fromisoformat(VOLVO_ARRIVED) - dt.date(2026, 2, 24)).days
+    porsche = {
+        "as_of": as_of,
+        "since_volvo_gal": round(p_since, 2), "since_volvo_days": p_days,
+        "since_volvo_fills": sum(1 for f in fills if f["car"] == "Porsche" and f["date"] >= VOLVO_ARRIVED),
+        "since_volvo_gal30": round(p_since / p_days * 30, 2),
+        "pre_high_gal30": round(sum(f["gal"] for f in pre if f["car"] == "Weekend: Mini or Porsche") / pre_days * 30, 2),
+        "purchase_weekend_gal": round(sum(f["gal"] for f in fills if f["car"] == "Assumed Porsche"), 2),
+    }
     summary = {
         "mini12_gal30": round(mini12, 2), "mini_season_gal30": round(mini_season, 2),
         "volvo_gal30": round(volvo, 2) if volvo else None,
@@ -66,8 +84,9 @@ def main():
         "change_vs_mini12": round(volvo / mini12 - 1, 4) if volvo else None,
         "change_vs_season": round(volvo / mini_season - 1, 4) if volvo else None,
         "saving30_today": round((mini12 - volvo) * today, 2) if volvo else None,
+        "porsche": porsche,
     }
-    data = {"volvo_arrived": "2026-08-24", "porsche_bought": "2026-02-21",
+    data = {"volvo_arrived": VOLVO_ARRIVED, "porsche_bought": "2026-02-21",
             "summary": summary, "fills": fills, "eia": eia}
     # keep the old timestamp when nothing changed, so a quiet week makes no commit
     out = ROOT / "data.json"

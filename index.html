@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gas Tracker — Mini vs Volvo V60</title>
+<title>Gas Tracker — Mini vs Volvo V60, plus the Porsche</title>
 <style>
   :root{
     --bg:#ffffff;--surface:#f7f8fa;--line:#e6e8ec;--ink:#1a1d21;--muted:#6b7280;--accent:#185FA5;
@@ -26,10 +26,10 @@
   .upd{font-size:12px;color:var(--muted)}
   h2{font-size:20px;margin:34px 0 6px;font-weight:600}
   p.sub{color:var(--muted);margin:4px 0 0;font-size:14px}
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:18px}
   .kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
   .kpi .l{font-size:12.5px;color:var(--muted)}
-  .kpi .v{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  .kpi .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
   .kpi .v.good{color:#137a4f}
   .kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
   .chartbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;box-shadow:var(--shadow);min-width:0}
@@ -62,7 +62,7 @@
 <body>
 <header class="top">
   <div class="crumb"><a href="https://hlash99.github.io/">&larr; hlash99 dashboard</a></div>
-  <h1>⛽ Gas Tracker — Mini → Volvo V60</h1>
+  <h1>⛽ Gas Tracker — Mini → Volvo V60 · Porsche</h1>
   <span class="upd" id="updated">loading…</span>
 </header>
 <div class="wrap">
@@ -75,6 +75,11 @@
   <p class="sub">The Mini's two baselines are from before the Porsche (Feb 21 2026), when every fill was the Mini. The Volvo is measured fill to fill.</p>
   <div class="chartbox"><div class="chartwrap short"><canvas id="cmp" role="img" aria-label="Bar chart of gallons per 30 days for the Mini and the Volvo"></canvas></div>
     <div class="tnote" id="cmpNote"></div></div>
+
+  <h2>Porsche 997.2 Turbo S</h2>
+  <p class="sub">Filled only on weekends. Since the Volvo arrived there's no Mini, so every Porsche fill is tagged directly. Before that, weekend fills could have been either car, so that period only has an upper bound.</p>
+  <div class="chartbox"><div class="chartwrap short"><canvas id="por" role="img" aria-label="Bar chart of Porsche gallons per 30 days compared with the Volvo"></canvas></div>
+    <div class="tnote" id="porNote"></div></div>
 
   <h2>Estimated gallons bought per month, by car</h2>
   <p class="sub">Weekend fills between the Porsche and the Volvo can't be split between the Mini and the Porsche, so they're shown separately.</p>
@@ -93,7 +98,7 @@
   <h2>Method &amp; caveats</h2>
   <ul class="notes">
     <li><b>Fuel</b> means gas-category charges of $20 or more. Smaller ones are car washes, snacks or top-offs, and ChargePoint is EV charging (about $7 per 30 days so far).</li>
-    <li><b>Porsche:</b> it's filled only on weekends, so weekend fills from Feb 21 to Aug 23 2026 are left out of the Mini numbers. The Mini baselines use the 12 months before the Porsche and the same season a year earlier.</li>
+    <li><b>Porsche:</b> it's filled only on weekends, so weekend fills from Feb 21 to Aug 23 2026 are left out of the Mini numbers. The Mini baselines use the 12 months before the Porsche and the same season a year earlier. Since the Volvo arrived, weekend fills are tagged by car, and the Porsche's rate is gallons bought ÷ days since Aug 24.</li>
     <li><b>Confirmed by Hassan on Oct 8 2026:</b> Sep 13 (Half Moon Bay) and Sep 20 were the Porsche, Sep 16 was the Civic, and Sep 9 and Oct 8 were the Volvo.</li>
     <li><b>Prices:</b> EIA is an area average. The Menlo Park Chevron runs above it, so the Volvo's gallons are probably slightly overstated, which makes these numbers conservative.</li>
     <li><b>Not included:</b> home charging. A full charge costs about $5 at PG&amp;E EV2-A off-peak, so charging most nights would cancel much of the gas saving. Office charging is free.</li>
@@ -121,7 +126,7 @@ const md=s=>new Date(s+"T12:00").toLocaleDateString(undefined,{month:"short",day
 Chart.defaults.color=MUTED; Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
 
 fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
-  const S=D.summary;
+  const S=D.summary, P=S.porsche;
   $("#updated").textContent="Updated "+new Date(D.updated).toLocaleDateString(undefined,{month:"short",day:"numeric"})+" · EIA week of "+md(S.today_premium_week);
 
   // KPIs
@@ -130,6 +135,7 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
     {l:"Volvo vs Mini, gallons per 30 days",v:pct(S.change_vs_mini12),good:S.change_vs_mini12<0,s:`${S.volvo_gal30.toFixed(1)} vs ${S.mini12_gal30.toFixed(1)} gal · ${pct(S.change_vs_season)} vs same season`},
     {l:"Gas saved per 30 days, at today's price",v:fmt0(S.saving30_today),good:S.saving30_today>0,s:"before home charging"},
     {l:"Volvo gas cost per 30 days",v:fmt0(S.volvo_gal30*S.today_premium),s:`Mini would be ${fmt0(S.mini12_gal30*S.today_premium)}`},
+    {l:"Porsche gas per 30 days",v:P.since_volvo_gal30.toFixed(1)+" gal",s:`${fmt0(P.since_volvo_gal30*S.today_premium)} at today's price · since Aug 24`},
     {l:"SF premium, EIA weekly",v:"$"+S.today_premium.toFixed(2),s:"week of "+md(S.today_premium_week)},
   ].map(k=>`<div class="kpi"><div class="l">${k.l}</div><div class="v${k.good?" good":""}">${k.v}</div><div class="s">${k.s}</div></div>`).join("");
 
@@ -142,6 +148,18 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw.toFixed(1)+" gal per 30 days"}}},
       scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[vl]});
   $("#cmpNote").textContent=`The Volvo has ${S.volvo_fills} fills so far; its rate counts the gallons bought after the first fill, divided by the days between them. Costs use today's premium ($${S.today_premium.toFixed(2)}).`;
+
+  // Porsche bars: confirmed rate since the Volvo, upper bound before it, Volvo for scale
+  const pv=[P.since_volvo_gal30,P.pre_high_gal30,S.volvo_gal30];
+  const pl=["Porsche · Aug 24 → "+md(P.as_of).replace(/, \d{4}/,""),"Porsche · Feb 24 → Aug 23 (at most)","Volvo V60 (daily driver)"];
+  const hatch=(()=>{const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");x.fillStyle=dark?"#0f3d2c":"#c6eedd";x.fillRect(0,0,8,8);
+    x.strokeStyle=CAR.Porsche.c;x.lineWidth=2;x.beginPath();x.moveTo(0,8);x.lineTo(8,0);x.stroke();return x.createPattern(c,"repeat");})();
+  const pvl={id:"pvl",afterDatasetsDraw(c){const x=c.ctx;x.save();x.fillStyle=INK;x.font="12px "+Chart.defaults.font.family;x.textBaseline="middle";
+    c.getDatasetMeta(0).data.forEach((b,i)=>x.fillText((i===1?"≤ ":"")+pv[i].toFixed(1)+" gal · "+fmt0(pv[i]*S.today_premium)+"/30d",b.x+6,b.y));x.restore();}};
+  new Chart($("#por"),{type:"bar",data:{labels:pl,datasets:[{data:pv,backgroundColor:[CAR.Porsche.c,hatch,CAR.Volvo.c],borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>(i.dataIndex===1?"at most ":"")+i.raw.toFixed(1)+" gal per 30 days"}}},
+      scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[pvl]});
+  $("#porNote").textContent=`Since Aug 24: ${P.since_volvo_gal.toFixed(1)} gal over ${P.since_volvo_fills} fills in ${P.since_volvo_days} days (gallons bought ÷ days elapsed, so it settles as fills accumulate). The Feb 24 – Aug 23 bound assumes every weekend fill was the Porsche. The purchase weekend (Feb 21–23, about ${Math.round(P.purchase_weekend_gal)} gal including the drive home) is left out as a one-off.`;
 
   // monthly gallons by car
   const fuel=D.fills.filter(f=>f.gal);
