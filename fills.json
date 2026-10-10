@@ -805,6 +805,13 @@
    "amount": 103.63,
    "car": "Volvo",
    "note": "Confirmed"
+  },
+  {
+   "date": "2026-10-10",
+   "station": "ExxonMobil",
+   "amount": 89.22,
+   "car": "Porsche",
+   "note": "Confirmed · two pump charges ($50.59 + $38.63), pending in Monarch"
   }
  ]
 }
