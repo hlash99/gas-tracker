@@ -811,7 +811,35 @@
    "station": "ExxonMobil",
    "amount": 89.22,
    "car": "Porsche",
-   "note": "Confirmed · two pump charges ($50.59 + $38.63), pending in Monarch"
+   "note": "Confirmed · two pump charges ($50.59 + $38.63)"
+  },
+  {
+   "date": "2026-10-15",
+   "station": "Chevron",
+   "amount": 10.0,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-10-18",
+   "station": "Shell",
+   "amount": 9.99,
+   "car": "Excluded",
+   "note": "Under $20 — car wash / snack / top-off"
+  },
+  {
+   "date": "2026-10-24",
+   "station": "ChargePoint",
+   "amount": 2.06,
+   "car": "EV charging",
+   "note": "Public charging, not gas"
+  },
+  {
+   "date": "2026-10-27",
+   "station": "Chevron",
+   "amount": 98.0,
+   "car": "Volvo",
+   "note": "Confirmed · pending in Monarch"
   }
  ]
 }
