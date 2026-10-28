@@ -837,9 +837,16 @@
   {
    "date": "2026-10-27",
    "station": "Chevron",
-   "amount": 98.0,
+   "amount": 90.0,
    "car": "Volvo",
-   "note": "Confirmed · pending in Monarch"
+   "note": "Confirmed · $90 fuel at $6.40/gal; Monarch charge $98 includes $8 car wash"
+  },
+  {
+   "date": "2026-10-27",
+   "station": "Chevron",
+   "amount": 8.0,
+   "car": "Excluded",
+   "note": "Car wash — split from the $98 Chevron charge"
   }
  ]
 }
