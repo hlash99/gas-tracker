@@ -7,7 +7,8 @@ on:
     - cron: '17 15 * * 2'   # Tue 15:17 UTC (~08:17 PT)
   workflow_dispatch: {}      # also lets the dashboard ↻ button trigger it
   push:
-    paths: ['fills.json']    # rebuild whenever fills are added
+    branches: [main]
+    paths: ['fills.json', 'scripts/update.py']   # rebuild whenever fills or the method change
 
 permissions:
   contents: write
@@ -27,6 +28,9 @@ jobs:
       - name: Rebuild data.json (EIA prices + fills)
         run: python scripts/update.py
       - name: Commit if changed
+        # also runs when update.py exits non-zero after rebuilding from cached prices (EIA
+        # unreachable), so a newly added fill still shows up; the run itself stays red
+        if: always()
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
