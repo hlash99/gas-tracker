@@ -73,13 +73,20 @@
 
   <h2>Gallons per 30 days</h2>
   <p class="sub">The Mini's two baselines are from before the Porsche (Feb 21 2026), when every fill was the Mini. The Volvo is measured fill to fill.</p>
-  <div class="chartbox"><div class="chartwrap short"><canvas id="cmp" role="img" aria-label="Bar chart of gallons per 30 days for the Mini and the Volvo"></canvas></div>
+  <div class="chartbox"><div class="chartwrap short" id="cmpWrap"><canvas id="cmp" role="img" aria-label="Bar chart of gallons per 30 days for the Mini and the Volvo"></canvas></div>
     <div class="tnote" id="cmpNote"></div></div>
 
   <h2>Porsche 997.2 Turbo S</h2>
   <p class="sub">Filled only on weekends. Since the Volvo arrived there's no Mini, so every Porsche fill is tagged directly. Before that, weekend fills could have been either car, so that period only has an upper bound.</p>
   <div class="chartbox"><div class="chartwrap short"><canvas id="por" role="img" aria-label="Bar chart of Porsche gallons per 30 days compared with the Volvo"></canvas></div>
     <div class="tnote" id="porNote"></div></div>
+
+  <div id="hhSec" hidden>
+  <h2>All cars together</h2>
+  <p class="sub">Every fuel fill, whichever car it went into, so nothing here depends on how fills were tagged. Dollars are what was actually paid.</p>
+  <div class="chartbox"><div class="chartwrap short" style="height:250px"><canvas id="hh" role="img" aria-label="Bar chart of total gallons per 30 days for all cars, by period"></canvas></div>
+    <div class="tnote" id="hhNote"></div></div>
+  </div>
 
   <h2>Estimated gallons bought per month, by car</h2>
   <p class="sub">Weekend fills between the Porsche and the Volvo can't be split between the Mini and the Porsche, so they're shown separately.</p>
@@ -91,16 +98,17 @@
   <div class="chartbox"><div class="chartwrap short"><canvas id="price" role="img" aria-label="Line chart of weekly San Francisco premium gas price"></canvas></div></div>
 
   <h2>Fill log</h2>
-  <p class="sub">Newest first. Estimated gallons = amount ÷ that week's EIA premium price.</p>
+  <p class="sub">Newest first. Estimated gallons = amount ÷ EIA's price for that day (premium; regular for the Civic).</p>
   <div class="chips" id="chips"></div>
   <div class="tablescroll"><table id="log"><thead><tr><th>Date</th><th>Day</th><th>Station</th><th>Amount</th><th>EIA $/gal</th><th>Est. gal</th><th>Car</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+  <div class="tnote" id="logNote"></div>
 
   <h2>Method &amp; caveats</h2>
   <ul class="notes">
     <li><b>Fuel</b> means gas-category charges of $20 or more. Smaller ones are car washes, snacks or top-offs, and ChargePoint is EV charging (about $7 per 30 days so far).</li>
     <li><b>Porsche:</b> it's filled only on weekends, so weekend fills from Feb 21 to Aug 23 2026 are left out of the Mini numbers. The Mini baselines use the 12 months before the Porsche and the same season a year earlier. Since the Volvo arrived, weekend fills are tagged by car, and the Porsche's rate is gallons bought ÷ days since Aug 24.</li>
     <li><b>Confirmed by Hassan on Oct 8 2026:</b> Sep 13 (Half Moon Bay) and Sep 20 were the Porsche, Sep 16 was the Civic, and Sep 9 and Oct 8 were the Volvo.</li>
-    <li><b>Prices:</b> EIA is an area average. The Menlo Park Chevron runs above it, so the Volvo's gallons are probably slightly overstated, which makes these numbers conservative.</li>
+    <li><b>Prices:</b> EIA is an area average. The Menlo Park Chevron runs above it, so the Volvo's gallons are probably slightly overstated, which makes these numbers conservative.<span id="pumpNote"></span> EIA reports one price per week (Mondays); each fill uses a straight line between the two readings around its date.</li>
     <li><b>Not included:</b> home charging. A full charge costs about $5 at PG&amp;E EV2-A off-peak, so charging most nights would cancel much of the gas saving. Office charging is free.</li>
     <li><b>Updating:</b> new fills are added from Monarch by hand. EIA prices refresh every week on their own.</li>
   </ul>
@@ -126,8 +134,12 @@ const md=s=>new Date(s+"T12:00").toLocaleDateString(undefined,{month:"short",day
 Chart.defaults.color=MUTED; Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
 
 fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
-  const S=D.summary, P=S.porsche;
-  $("#updated").textContent="Updated "+new Date(D.updated).toLocaleDateString(undefined,{month:"short",day:"numeric"})+" · EIA week of "+md(S.today_premium_week);
+  const S=D.summary, P=S.porsche, H=S.household, MR=S.mini_recent, narrow=innerWidth<560;
+  const short=s=>md(s).replace(/, \d{4}/,"");
+  // on a phone the y-axis labels wrap onto two lines instead of being cut off
+  const lab=(a,b,n)=>narrow?(n||[a,b]):a+" · "+b;
+  const span=(a,b)=>short(a)+(narrow?"–":" → ")+short(b);
+  $("#updated").textContent="Updated "+new Date(D.updated).toLocaleDateString(undefined,{month:"short",day:"numeric"})+" · EIA week of "+md(S.today_premium_week)+(D.eia_stale?" · EIA fetch failed, using saved prices":"");
 
   // KPIs
   const pct=v=>(v>0?"+":"")+Math.round(v*100)+"%";
@@ -137,29 +149,60 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
     {l:"Volvo gas cost per 30 days",v:fmt0(S.volvo_gal30*S.today_premium),s:`Mini would be ${fmt0(S.mini12_gal30*S.today_premium)}`},
     {l:"Porsche gas per 30 days",v:P.since_volvo_gal30.toFixed(1)+" gal",s:`${fmt0(P.since_volvo_gal30*S.today_premium)} at today's price · since Aug 24`},
     {l:"SF premium, EIA weekly",v:"$"+S.today_premium.toFixed(2),s:"week of "+md(S.today_premium_week)},
+    ...(H&&H.since_volvo?[{l:"All cars, gas per 30 days",v:H.since_volvo.gal30.toFixed(1)+" gal",s:`${fmt0(H.since_volvo.usd30)} paid`+(H.change_vs_year_ago!=null?` · ${pct(H.change_vs_year_ago)} vs same dates last year`:"")}]:[]),
   ].map(k=>`<div class="kpi"><div class="l">${k.l}</div><div class="v${k.good?" good":""}">${k.v}</div><div class="s">${k.s}</div></div>`).join("");
 
   // comparison bars
-  const cv=[S.mini12_gal30,S.mini_season_gal30,S.volvo_gal30];
-  const lbls=["Mini · 12 mo before Porsche","Mini · Sep–Nov 2025","Volvo · "+md(S.volvo_window[0]).replace(/, \d{4}/,"")+" → "+md(S.volvo_window[1]).replace(/, \d{4}/,"")];
+  const hasMR=!!(MR&&MR.lo_gal30!=null&&MR.hi_gal30!=null);
+  const mkHatch=(bg,fg)=>{const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");x.fillStyle=bg;x.fillRect(0,0,8,8);
+    x.strokeStyle=fg;x.lineWidth=2;x.beginPath();x.moveTo(0,8);x.lineTo(8,0);x.stroke();return x.createPattern(c,"repeat");};
+  const bars=[
+    {l:lab("Mini","12 mo before Porsche",["Mini, 12 mo","before Porsche"]),v:S.mini12_gal30,c:CAR.Mini.c},
+    {l:lab("Mini","Sep–Nov 2025"),v:S.mini_season_gal30,c:CAR.Mini.c},
+    ...(hasMR?[{l:lab("Mini",span(MR.window[0],MR.window[1])+" "+MR.window[1].slice(0,4),["Mini "+MR.window[1].slice(0,4),span(MR.window[0],MR.window[1])]),v:[MR.lo_gal30,MR.hi_gal30],c:mkHatch(dark?"#444441":"#e1e0d9",CAR.Mini.c)}]:[]),
+    {l:lab("Volvo",span(S.volvo_window[0],S.volvo_window[1])),v:S.volvo_gal30,c:CAR.Volvo.c},
+  ];
+  if(hasMR)$("#cmpWrap").style.height="250px";
   const vl={id:"vl",afterDatasetsDraw(c){const x=c.ctx;x.save();x.fillStyle=INK;x.font="12px "+Chart.defaults.font.family;x.textBaseline="middle";
-    c.getDatasetMeta(0).data.forEach((b,i)=>x.fillText(cv[i].toFixed(1)+" gal · "+fmt0(cv[i]*S.today_premium)+"/30d",b.x+6,b.y));x.restore();}};
-  new Chart($("#cmp"),{type:"bar",data:{labels:lbls,datasets:[{data:cv,backgroundColor:[CAR.Mini.c,CAR.Mini.c,CAR.Volvo.c],borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
-    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>i.raw.toFixed(1)+" gal per 30 days"}}},
+    c.getDatasetMeta(0).data.forEach((b,i)=>{const v=bars[i].v;x.fillText(Array.isArray(v)?v[0].toFixed(1)+"–"+v[1].toFixed(1)+" gal":v.toFixed(1)+" gal · "+fmt0(v*S.today_premium)+"/30d",Math.max(b.x,b.base)+6,b.y);});x.restore();}};
+  new Chart($("#cmp"),{type:"bar",data:{labels:bars.map(b=>b.l),datasets:[{data:bars.map(b=>b.v),backgroundColor:bars.map(b=>b.c),borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>[].concat(i[0].label).join(" · ").replace(/,/g," · "),label:i=>Array.isArray(i.raw)?i.raw[0].toFixed(1)+" to "+i.raw[1].toFixed(1)+" gal per 30 days":i.raw.toFixed(1)+" gal per 30 days"}}},
       scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[vl]});
-  $("#cmpNote").textContent=`The Volvo has ${S.volvo_fills} fills so far; its rate counts the gallons bought after the first fill, divided by the days between them. Costs use today's premium ($${S.today_premium.toFixed(2)}).`;
+  $("#cmpNote").textContent=`The Volvo has ${S.volvo_fills} fills so far; its rate counts the gallons bought after the first fill, divided by the days between them. Costs use today's premium ($${S.today_premium.toFixed(2)}).`
+    +(hasMR&&MR.volvo_change_lo!=null?` The hatched bar is the Mini in its last six months: weekday fills alone make ${MR.lo_gal30.toFixed(1)} gal, and ${MR.hi_gal30.toFixed(1)} if every weekend fill was the Mini too. Against that range the Volvo is ${pct(MR.volvo_change_hi)} to ${pct(MR.volvo_change_lo)}, so part of the drop from the older baselines is that less gas was already being bought in 2026.`:"")
+    +(S.volvo_vs_mini_stretches?(R=>` Measured the same fill-to-fill way, ${R.below_volvo===0?"none":R.below_volvo} of the ${R.windows} Mini stretches of similar length (about ${R.span_days} days) before the Porsche ${R.below_volvo===1?"was":"were"} as low as the Volvo; they ranged from ${R.min.toFixed(1)} to ${R.max.toFixed(1)} gal, median ${R.median.toFixed(1)}.`)(S.volvo_vs_mini_stretches):"");
 
   // Porsche bars: confirmed rate since the Volvo, upper bound before it, Volvo for scale
   const pv=[P.since_volvo_gal30,P.pre_high_gal30,S.volvo_gal30];
-  const pl=["Porsche · Aug 24 → "+md(P.as_of).replace(/, \d{4}/,""),"Porsche · Feb 24 → Aug 23 (at most)","Volvo V60 (daily driver)"];
+  const pl=[lab("Porsche",span(D.volvo_arrived,P.as_of)),lab("Porsche","Feb 24 → Aug 23 (at most)",["Porsche (max)","Feb 24–Aug 23"]),narrow?["Volvo V60","daily driver"]:"Volvo V60 (daily driver)"];
   const hatch=(()=>{const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");x.fillStyle=dark?"#0f3d2c":"#c6eedd";x.fillRect(0,0,8,8);
     x.strokeStyle=CAR.Porsche.c;x.lineWidth=2;x.beginPath();x.moveTo(0,8);x.lineTo(8,0);x.stroke();return x.createPattern(c,"repeat");})();
   const pvl={id:"pvl",afterDatasetsDraw(c){const x=c.ctx;x.save();x.fillStyle=INK;x.font="12px "+Chart.defaults.font.family;x.textBaseline="middle";
     c.getDatasetMeta(0).data.forEach((b,i)=>x.fillText((i===1?"≤ ":"")+pv[i].toFixed(1)+" gal · "+fmt0(pv[i]*S.today_premium)+"/30d",b.x+6,b.y));x.restore();}};
   new Chart($("#por"),{type:"bar",data:{labels:pl,datasets:[{data:pv,backgroundColor:[CAR.Porsche.c,hatch,CAR.Volvo.c],borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
-    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>(i.dataIndex===1?"at most ":"")+i.raw.toFixed(1)+" gal per 30 days"}}},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:150}},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>[].concat(i[0].label).join(" · ").replace(/,/g," · "),label:i=>(i.dataIndex===1?"at most ":"")+i.raw.toFixed(1)+" gal per 30 days"}}},
       scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[pvl]});
   $("#porNote").textContent=`Since Aug 24: ${P.since_volvo_gal.toFixed(1)} gal over ${P.since_volvo_fills} fills in ${P.since_volvo_days} days (gallons bought ÷ days elapsed, so it settles as fills accumulate). The Feb 24 – Aug 23 bound assumes every weekend fill was the Porsche. The purchase weekend (Feb 21–23, about ${Math.round(P.purchase_weekend_gal)} gal including the drive home) is left out as a one-off.`;
+
+  // all cars together: total gallons per 30 days by period, with the dollars actually paid
+  if(H&&H.since_volvo&&H.before_porsche){
+    $("#hhSec").hidden=false;
+    const yr=s=>s.slice(0,4), rng=w=>span(w[0],w[1]);
+    const hb=[
+      {k:"before_porsche",l:lab("Mini only","12 mo before Porsche",["Mini, 12 mo","before Porsche"]),c:CAR.Mini.c},
+      {k:"year_ago",l:lab("Same dates a year ago",rng(H.year_ago.window)+" "+yr(H.year_ago.window[1]),["A year ago",rng(H.year_ago.window)]),c:CAR.Mini.c},
+      {k:"mini_porsche",l:lab("Mini + Porsche",rng(H.mini_porsche.window)),c:CAR["Weekend: Mini or Porsche"].c},
+      {k:"since_volvo",l:lab("Volvo + Porsche + Civic",rng(H.since_volvo.window),["Since the Volvo",rng(H.since_volvo.window)]),c:CAR.Volvo.c},
+    ].filter(b=>H[b.k]&&H[b.k].gal30>0);
+    const hvl={id:"hvl",afterDatasetsDraw(c){const x=c.ctx;x.save();x.fillStyle=INK;x.font="12px "+Chart.defaults.font.family;x.textBaseline="middle";
+      c.getDatasetMeta(0).data.forEach((b,i)=>x.fillText(H[hb[i].k].gal30.toFixed(1)+" gal · "+fmt0(H[hb[i].k].usd30)+" paid",b.x+6,b.y));x.restore();}};
+    new Chart($("#hh"),{type:"bar",data:{labels:hb.map(b=>b.l),datasets:[{data:hb.map(b=>H[b.k].gal30),backgroundColor:hb.map(b=>b.c),borderRadius:{topRight:4,bottomRight:4},borderSkipped:"left",barThickness:24}]},
+      options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,layout:{padding:{right:130}},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>[].concat(i[0].label).join(" · ").replace(/,/g," · "),label:i=>i.raw.toFixed(1)+" gal per 30 days · "+H[hb[i.dataIndex].k].fills+" fills in "+H[hb[i.dataIndex].k].days+" days"}}},
+        scales:{x:{min:0,grid:{color:GRID},border:{display:false},title:{display:true,text:"gallons per 30 days, all cars"}},y:{grid:{display:false},ticks:{color:INK}}}},plugins:[hvl]});
+    const sv=H.since_volvo, ya=H.year_ago;
+    $("#hhNote").textContent=`Gallons bought ÷ days in the period; dollars are per 30 days at the prices paid then. Since the Volvo arrived: ${sv.fills} fills in ${sv.days} days.`
+      +(ya&&ya.gal30>0?` The same dates a year earlier had ${ya.fills} fills, so total gas is ${pct(H.change_vs_year_ago)} in gallons and ${pct(sv.usd30/ya.usd30-1)} in dollars. Short periods swing by a fill or two (one fill is about ${(30/sv.days*12).toFixed(0)} gal per 30 days here).`:"");
+  }
 
   // monthly gallons by car
   const fuel=D.fills.filter(f=>f.gal);
@@ -195,10 +238,15 @@ fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(D=>{
   const draw=()=>{
     $("#chips").innerHTML=cars.map(c=>`<button class="${c===sel?"on":""}" data-c="${c}">${c}</button>`).join("");
     $("#log tbody").innerHTML=rows.filter(match).map(f=>{const k=carKey(f.car),col=(CAR[k]||{}).c||"transparent";
-      return `<tr class="${f.gal?"":"dim"}"><td class="num">${f.date}</td><td>${f.day}</td><td>${f.station}</td><td class="num">${fmt$(f.amount)}</td><td class="num">$${f.price.toFixed(3)}</td><td class="num">${f.gal?f.gal.toFixed(2):"—"}</td><td><span class="tag"><i style="background:${col}"></i>${f.car}</span></td><td class="note">${f.note||""}</td></tr>`;}).join("");
+      return `<tr class="${f.gal?"":"dim"}"><td class="num">${f.date}</td><td>${f.day}</td><td>${f.station}</td><td class="num">${fmt$(f.amount)}</td><td class="num">$${f.price.toFixed(3)}</td><td class="num">${f.gal?f.gal.toFixed(2)+(f.over_tank?` <span title="More than the ${f.over_tank} gal tank holds">▲</span>`:f.gal_src==="pump"?` <span title="From the pump price, $${f.paid_ppg.toFixed(2)}/gal">●</span>`:""):"—"}</td><td><span class="tag"><i style="background:${col}"></i>${f.car}</span></td><td class="note">${f.note||""}</td></tr>`;}).join("");
   };
   $("#chips").addEventListener("click",e=>{const b=e.target.closest("button");if(b){sel=b.dataset.c;draw();}});
   draw();
+  const nOver=D.fills.filter(f=>f.over_tank).length, nPump=D.fills.filter(f=>f.gal_src==="pump").length;
+  $("#logNote").textContent=(nOver?`▲ ${nOver} fills come out larger than the car's tank, so the pump price was above the EIA average or the charge included something else, like a car wash. Capping them at tank size would move the Mini's 12-month baseline from ${S.mini12_gal30.toFixed(1)} to ${S.mini12_gal30_tank_capped.toFixed(1)} gal. `:"")
+    +(nPump?`● gallons from the pump price recorded with the fill instead of the EIA average (${nPump} so far).`:"");
+  const PC=S.pump_check;
+  if(PC)$("#pumpNote").textContent=` Checked against ${PC.fills} fill${PC.fills===1?"":"s"} with a known pump price: paid $${PC.avg_paid.toFixed(2)} vs EIA $${PC.avg_eia.toFixed(2)} for the same day${PC.fills===1?"":"s"} (${(PC.avg_diff_pct>0?"+":"")+(PC.avg_diff_pct*100).toFixed(1)}%).`;
 }).catch(e=>{$("#updated").textContent="data failed to load";console.error(e);});
 </script>
 </body>
