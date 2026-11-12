@@ -847,6 +847,14 @@
    "amount": 8.0,
    "car": "Excluded",
    "note": "Car wash — split from the $98 Chevron charge"
+  },
+  {
+   "date": "2026-11-12",
+   "station": "Unknown",
+   "amount": 75.92,
+   "gallons": 13.32,
+   "car": "Volvo",
+   "note": "From pump photo · 13.32 gal for $75.92 (~$5.70/gal) · odometer 37,196 mi · not yet matched to a Monarch charge"
   }
  ]
 }
